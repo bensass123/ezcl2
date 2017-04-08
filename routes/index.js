@@ -80,6 +80,7 @@ router.get("/init", function(req, res) {
 
 
 router.get("/return/:make", function(req, res) {
+	console.log('return ' + req.params.make + ' hit');
 	db.craigslistCars.find({make: req.params.make}, function(error, found) {
     // Throw any errors to the console
     if (error) {
