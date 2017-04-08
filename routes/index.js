@@ -64,7 +64,8 @@ router.get("/all", function(req, res) {
   });
 });
 
-router.get('/init', function(req, res) {
+router.get("/init", function(req, res) {
+	console.log('hit init');
   db.craigslistCars.createIndex( { "clid": 1 }, { unique: true }, function(error, found) {
     // Throw any errors to the console
     if (error) {
