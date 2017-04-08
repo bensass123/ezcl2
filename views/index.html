@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Buy American?</title>
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+</head>
+
+<body>
+<!-- handlebars template to display car and have three buttons yes, no maybe w their routes defined by clid -->
+<script id="cl-template" type="text/x-handlebars-template">
+    <div class='container'>
+      <div class='row'>
+       <div class=col-xs-12>
+       <button type="button" class="btn btn-lg btn-primary" onclick="categorize('yes', {{ clid }})">YES</button>
+       <button type="button" class="btn btn-lg btn-primary" onclick="categorize('maybe', {{ clid }})">MAYBE</button>  
+       <button type="button" class="btn btn-lg btn-primary" onclick="categorize('no', {{ clid }})">NO</button>      
+        <a target="_blank" href= {{ link }} style='font-size: 20px; text-align:center;'><h2>{{ title }}</h2><br>
+        <h3 style='text-align: center'>{{ price }}</h3></a>
+        <p id='post'>{{ post }}</p>
+        {{#each pics}}
+        <img src= {{ this }} alt=''>
+        {{/each}}
+        <br><br>
+       </div>
+      </div> 
+    </div>
+</script>
+
+<div id='removeSearch'></div>
+<div id='buttons'></div>
+
+<div id='results'></div>
+<div id='buttons2'></div>
+<div id='yesandmaybes'></div>
+
+
+
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+
+<script type='text/javascript'>
+
+//need to call this: db.craigslistCars.createIndex( { "clid": 1 }, { unique: true } )
+
+var categorize = (option, clid) => {
+	$.getJSON("/update/" + option + '/' + clid, function(result) {
+		console.log('updated ' + clid + ' with ' + option + ' flag.')
+	})
+}
+
+
+var scrape = (make) => {
+  $.getJSON("/scrape/" + make, function(result){
+  		//populating the database
+    });
+}
+
+scrape('honda');
+scrape('toyota');
+scrape('mazda');
+scrape('nissan');
+scrape('subaru');
+
+$.getJSON('/init',function(result) {
+	console.log('db initiation, watching for duplicates');
+})
+
+var getMake = (make) => {
+	$('#buttons2').empty()
+	  $.getJSON("/return/" + make, function(result){
+	  	$('#results').empty();
+        result.forEach((field, i) => {
+        	if (!field.no) {
+	        	var fillDiv = $('<button/>',
+	            {
+	                class: 'btn btn-sm btn-primary',
+	                id: 'fillButton_' + i,
+	                text: field.title,
+	                'data-index': i,
+	                'data-href': field.href,
+	                click: function (event) {
+	                	$('#buttons2').empty(); 
+	                    var ind = $(this).data('index');
+	                    fillit(result[ind]);
+	                    console.log(result[ind].title);
+	                    setTimeout(function(){$('html, body').animate({scrollTop: '0px'}, 300);}, 200);
+	                }
+	            });
+            $("#buttons2").append(fillDiv);
+        	}
+        });
+    });
+}
+
+var makeButton = (make) => {
+	var b = $('<button/>',
+		{
+			class: 'btn btn-sm btn-primary',
+            id: make + '_button',
+            text: make,
+            click: function (event) { 
+            	getMake(make);
+            }
+		});
+	$('#buttons').append(b);
+}
+
+var fillit = (obj) => {
+        var source   = $("#cl-template").html();
+        var template = Handlebars.compile(source);
+        var html = template(obj);
+        $('#results').html(html);
+}
+
+$( document ).ready(function() {
+	//create car buttons
+
+	makeButton('honda');
+	makeButton('toyota');
+	makeButton('nissan');
+	makeButton('mazda');
+	makeButton('subaru');
+
+	var remove = $('<button/>',
+            {
+                class: 'btn btn-danger btn-sm',
+                id: 'remove',
+                text: ' X ',
+                click: function () { 
+                    $('#results').empty();
+                }
+            });
+    $('#removeSearch').append(remove);
+
+})
+
+
+
+</script>
+
+</body>
+
+
+
+</html>
+
