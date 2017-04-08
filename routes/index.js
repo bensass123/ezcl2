@@ -38,10 +38,10 @@ router.get('/', function(req, res, next) {
 
 // Database configuration
 var databaseUrl = "mongodb://heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2/";
-var collections = ["craigslistCars"];
+// var collections = ["craigslistCars"];
 
 // Hook mongojs configuration to the db variable
-var db = mongojs(databaseUrl, collections); 
+var db = mongojs(databaseUrl); 
 
 db.on("error", function(error) {
   console.log("Database Error:", error);
