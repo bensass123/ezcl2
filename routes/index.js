@@ -242,7 +242,7 @@ router.get("/scrape/:make", function(req, res) {
 				          // Otherwise,
 				          else {
 				            // Log the saved data
-				            // console.log(saved);
+				            console.log(saved);
 				          }
 				        });
 			      }
