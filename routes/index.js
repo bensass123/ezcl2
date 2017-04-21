@@ -10,7 +10,7 @@ var mongojs = require("mongojs");
 var path = require('path');
 
 // Database configuration
-var databaseUrl = "heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2/";
+var databaseUrl = "heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2?ssl=true";
 // var databaseUrl = 'scraper';
 var collections = ["craigslistCars","choices"];
 
@@ -222,7 +222,7 @@ router.get("/category/:option", function(req, res) {
 			          // Otherwise,
 			          else {
 			            // Log the results data
-			            console.log(results);
+			            // console.log(results);
 									res.json(results);
 			          }
 				});
@@ -238,7 +238,7 @@ router.get("/category/:option", function(req, res) {
 			          // Otherwise,
 			          else {
 			            // Log the results data
-			            console.log(results);
+			            // console.log(results);
 									res.json(results);
 			          }
 				});
@@ -253,7 +253,7 @@ router.get("/category/:option", function(req, res) {
 			          // Otherwise,
 			          else {
 			            // Log the results data
-			            console.log(results);
+			            // console.log(results);
 									res.json(results);
 			          }
 			});
@@ -349,10 +349,10 @@ router.get("/scrape/:make", function(req, res) {
   	// Scrape data from craigslist search page and get url's of matching cars
   	rp(url).then(function (html) {
 	    var $ = cheerio.load(html);
-	    console.log(url);
+	    // console.log(url);
 
 	    var results = $('a.result-title');
-	    console.log('results:  ***********');
+	    // console.log('results:  ***********');
 	    // console.log(results);
 	    for (var i = 0; i < results.length; i++) {
 	    	// console.log('*****************************************************************')
@@ -388,8 +388,8 @@ router.get("/scrape/:make", function(req, res) {
 			    	// console.log(tempPics);
 			    }
 			    catch (e) {
-			    		console.log('*/*/*/*/*/*/*/*/*/*/*/*/');
-						console.log('NO PICS');
+			    	// 	console.log('*/*/*/*/*/*/*/*/*/*/*/*/');
+						// console.log('NO PICS');
 						var tempPics = [];
 			    }
 
