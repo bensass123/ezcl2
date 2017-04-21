@@ -1,12 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Buy American?</title>
 
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
 </head>
+
+<style>
+
+.carButton{
+    display: block;
+    color: black;
+}
+
+.optionButton {
+    color:black;
+}
+
+/*#buttons, #buttons2, #optionDiv, #removeSearch {
+    padding: 15px;
+}*/
+
+#buttons>button, #buttons2>button, #optionDiv>button, #removeSearch>button {
+    margin: 7px;
+}
+
+
+
+
+</style>
 
 <body>
 <!-- handlebars template to display car and have three buttons yes, no maybe w their routes defined by clid -->
@@ -14,9 +38,9 @@
     <div class='container'>
       <div class='row'>
        <div class=col-xs-12>
-       <button type="button" class="btn btn-lg btn-primary" onclick="categorize('yes', {{ clid }})">YES</button>
-       <button type="button" class="btn btn-lg btn-primary" onclick="categorize('maybe', {{ clid }})">MAYBE</button>  
-       <button type="button" class="btn btn-lg btn-primary" onclick="categorize('no', {{ clid }})">NO</button>      
+       <button type="button" class="btn btn-lg btn-primary catButton" onclick="categorize('yes', {{ clid }})">YES</button>
+       <button type="button" class="btn btn-lg btn-warning catButton" onclick="categorize('maybe', {{ clid }})">MAYBE</button>  
+       <button type="button" class="btn btn-lg btn-danger catButton" onclick="categorize('no', {{ clid }})">NO</button>      
         <a target="_blank" href= {{ link }} style='font-size: 20px; text-align:center;'><h2>{{ title }}</h2><br>
         <h3 style='text-align: center'>{{ price }}</h3></a>
         <p id='post'>{{ post }}</p>
@@ -29,11 +53,28 @@
     </div>
 </script>
 
-<div id='removeSearch'></div>
-<div id='buttons'></div>
 
-<div id='results'></div>
-<div id='buttons2'></div>
+
+<div class='container'>
+  <div class='row'>
+    <div class='col-sm-4'>
+        <div id='buttons'></div><div id='removeSearch'></div>
+    </div>
+    <div class='col-sm-4 col-sm-offset-4'>
+        <div id='optionDiv'></div>
+    </div>
+  </div>
+  <div class='row'>
+      <div class='col-sm-6 col-sm-offset-3'>
+        <div id='results'></div>
+      </div>
+</div>
+
+<div class='container'>
+    <div id='results'></div>
+</div>
+
+<div id='buttons2' style='display: block;'></div>
 <div id='yesandmaybes'></div>
 
 
@@ -43,14 +84,46 @@
 
 <script type='text/javascript'>
 
-//need to call this: db.craigslistCars.createIndex( { "clid": 1 }, { unique: true } )
+// populating arrays for yes, no, maybes
 
-var categorize = (option, clid) => {
-	$.getJSON("/update/" + option + '/' + clid, function(result) {
-		console.log('updated ' + clid + ' with ' + option + ' flag.')
-	})
+var nos = [];
+
+var updateNos = () => {
+    nos = [];
+    $.getJSON("/category/no", function(result){
+        result.forEach((field, i ) => {
+            nos.push(field.clid);
+        })
+    });
 }
 
+var yeses = [];
+
+var updateYeses = () => {
+    yeses = [];
+    $.getJSON("/category/yes", function(result){
+        result.forEach((field, i ) => {
+            yeses.push(field.clid);
+        })
+    });
+}
+
+var maybes = [];
+
+var updateMaybes = () => {
+    maybes = [];
+    $.getJSON("/category/maybe", function(result){
+        result.forEach((field, i ) => {
+            maybes.push(field.clid);
+        })
+    });
+}
+
+updateNos();
+updateMaybes();
+updateYeses();
+
+//scraping and adding to mongo db
 
 var scrape = (make) => {
   $.getJSON("/scrape/" + make, function(result){
@@ -64,28 +137,144 @@ scrape('mazda');
 scrape('nissan');
 scrape('subaru');
 
+var categorize = (option, clid) => {
+	$.getJSON("/update/" + option + '/' + clid, function(result) {
+		console.log('updated ' + clid + ' with ' + option + ' flag.')
+	})
+    switch(option){
+        case 'no':
+            nos.push(clid);
+            break;
+        case 'yes':
+            yeses.push(clid);
+            break;
+        case 'maybe':
+            maybes.push(clid);
+            break;
+    }
+}
+
+
+
+
 $.getJSON('/init',function(result) {
 	console.log('db initiation, watching for duplicates');
 })
 
-var getMake = (make) => {
-	$('#buttons2').empty()
-	  $.getJSON("/return/" + make, function(result){
+var popYeses = () => {
+    updateYeses();
+    $('#buttons2').empty()
+	  $.getJSON("/all", function(result){
 	  	$('#results').empty();
         result.forEach((field, i) => {
-        	if (!field.no) {
+        	if (yeses.includes(field.clid)) {
 	        	var fillDiv = $('<button/>',
 	            {
-	                class: 'btn btn-sm btn-primary',
+	                class: 'btn btn-sm btn-success carButton',
 	                id: 'fillButton_' + i,
 	                text: field.title,
 	                'data-index': i,
+                    'data-clid': field.clid,
 	                'data-href': field.href,
 	                click: function (event) {
 	                	$('#buttons2').empty(); 
 	                    var ind = $(this).data('index');
 	                    fillit(result[ind]);
 	                    console.log(result[ind].title);
+                        console.log(result[ind].clid);
+	                    setTimeout(function(){$('html, body').animate({scrollTop: '0px'}, 300);}, 200);
+	                }
+	            });
+            $("#buttons2").append(fillDiv);
+        	}
+        });
+    });
+}
+
+var popNos = () => {
+    updateNos();
+    $('#buttons2').empty()
+	  $.getJSON("/all", function(result){
+	  	$('#results').empty();
+        result.forEach((field, i) => {
+        	if (nos.includes(field.clid)) {
+	        	var fillDiv = $('<button/>',
+	            {
+	                class: 'btn btn-sm btn-danger carButton',
+	                id: 'fillButton_' + i,
+	                text: field.title,
+	                'data-index': i,
+                    'data-clid': field.clid,
+	                'data-href': field.href,
+	                click: function (event) {
+	                	$('#buttons2').empty(); 
+	                    var ind = $(this).data('index');
+	                    fillit(result[ind]);
+	                    console.log(result[ind].title);
+                        console.log(result[ind].clid);
+	                    setTimeout(function(){$('html, body').animate({scrollTop: '0px'}, 300);}, 200);
+	                }
+	            });
+            $("#buttons2").append(fillDiv);
+        	}
+        });
+    });
+}
+
+var popMaybes = () => {
+    updateMaybes();
+    $('#buttons2').empty()
+	  $.getJSON("/all", function(result){
+	  	$('#results').empty();
+        result.forEach((field, i) => {
+        	if (maybes.includes(field.clid)) {
+	        	var fillDiv = $('<button/>',
+	            {
+	                class: 'btn btn-sm btn-warning carButton',
+	                id: 'fillButton_' + i,
+	                text: field.title,
+	                'data-index': i,
+                    'data-clid': field.clid,
+	                'data-href': field.href,
+	                click: function (event) {
+	                	$('#buttons2').empty(); 
+	                    var ind = $(this).data('index');
+	                    fillit(result[ind]);
+	                    console.log(result[ind].title);
+                        console.log(result[ind].clid);
+	                    setTimeout(function(){$('html, body').animate({scrollTop: '0px'}, 300);}, 200);
+	                }
+	            });
+            $("#buttons2").append(fillDiv);
+        	}
+        });
+    });
+}
+
+
+var getMake = (make) => {
+    updateNos();
+    updateMaybes();
+    updateYeses();
+	$('#buttons2').empty()
+	  $.getJSON("/return/" + make, function(result){
+	  	$('#results').empty();
+        result.forEach((field, i) => {
+        	if (!nos.includes(field.clid)) {
+	        	var fillDiv = $('<button/>',
+	            {
+	                class: 'btn btn-md btn-info carButton',
+	                id: 'fillButton_' + i,
+	                text: field.title,
+	                'data-index': i,
+                    'data-clid': field.clid,
+	                'data-href': field.href,
+	                click: function (event) {
+	                	$('#buttons2').empty(); 
+	                    var ind = $(this).data('index');
+	                    fillit(result[ind]);
+	                    console.log(result[ind].title);
+                        console.log(result[ind].clid);
 	                    setTimeout(function(){$('html, body').animate({scrollTop: '0px'}, 300);}, 200);
 	                }
 	            });
@@ -98,7 +287,7 @@ var getMake = (make) => {
 var makeButton = (make) => {
 	var b = $('<button/>',
 		{
-			class: 'btn btn-sm btn-primary',
+			class: 'btn btn-md btn-primary',
             id: make + '_button',
             text: make,
             click: function (event) { 
@@ -106,6 +295,45 @@ var makeButton = (make) => {
             }
 		});
 	$('#buttons').append(b);
+}
+
+var makeYesButton = () => {
+    var b = $('<button/>',
+		{
+			class: 'optionButton btn btn-md btn-success',
+            id: 'YESES',
+            text: 'SHOW YESES',
+            click: function (event) { 
+            	popYeses();
+            }
+		});
+    $('#optionDiv').append(b);
+}
+
+var makeMaybeButton = () => {
+    var b = $('<button/>',
+		{
+			class: 'optionButton btn btn-md btn-warning',
+            id: 'MAYBES',
+            text: 'SHOW MAYBES',
+            click: function (event) { 
+            	popMaybes();
+            }
+		});
+    $('#optionDiv').append(b);
+}
+
+var makeNoButton = () => {
+    var b = $('<button/>',
+		{
+			class: 'optionButton btn btn-md btn-danger',
+            id: 'NOS',
+            text: 'SHOW NOS',
+            click: function (event) { 
+            	popNos();
+            }
+		});
+    $('#optionDiv').append(b);
 }
 
 var fillit = (obj) => {
@@ -123,6 +351,9 @@ $( document ).ready(function() {
 	makeButton('nissan');
 	makeButton('mazda');
 	makeButton('subaru');
+    makeYesButton();
+    makeMaybeButton();
+    makeNoButton();
 
 	var remove = $('<button/>',
             {

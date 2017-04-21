@@ -9,6 +9,19 @@ var cheerio = require("cheerio");
 var mongojs = require("mongojs");
 var path = require('path');
 
+// Database configuration
+// var databaseUrl = "mongodb://heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2/";
+var databaseUrl = 'scraper';
+// var collections = ["craigslistCars"];
+
+// Hook mongojs configuration to the db variable
+// var db = mongojs(databaseUrl,collections); 
+var db = mongojs(databaseUrl); 
+
+db.on("error", function(error) {
+  console.log("Database Error:", error);
+});
+
 //function to get address
 var clSearch = (postedToday, minPrice, maxPrice, make, minyear, maxMiles, onlyAutoTran) => {
 	//will not add auto tran if false
@@ -36,16 +49,7 @@ router.get('/', function(req, res, next) {
   res.sendFile(path.join(__dirname, '/../views/index.html'));
 });
 
-// Database configuration
-var databaseUrl = "mongodb://heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2/";
-// var collections = ["craigslistCars"];
 
-// Hook mongojs configuration to the db variable
-var db = mongojs(databaseUrl); 
-
-db.on("error", function(error) {
-  console.log("Database Error:", error);
-});
 
 
 
@@ -66,16 +70,18 @@ router.get("/all", function(req, res) {
 
 router.get("/init", function(req, res) {
 	console.log('hit init');
-  db.craigslistCars.createIndex( { "clid": 1 }, { unique: true }, function(error, found) {
-    // Throw any errors to the console
-    if (error) {
-      console.log(error);
-    }
-    // If there are no errors, send the data to the browser as a json
-    else { 
-    	res.json({});
-    }
-  });
+	db.craigslistCars.remove({}, function(error1,etc) {
+		db.craigslistCars.createIndex( { "clid": 1 }, { unique: true }, function(error, found) {
+			// Throw any errors to the console
+			if (error) {
+				console.log(error);
+			}
+			// If there are no errors, send the data to the browser as a json
+			else { 
+				res.end();
+			}
+		});
+	});
 });
 
 
@@ -92,14 +98,153 @@ router.get("/return/:make", function(req, res) {
     }
   });
 }); 
+
+router.get("/all", function(req, res) {
+	console.log('return all hit');
+	db.craigslistCars.find({}, function(error, found) {
+    // Throw any errors to the console
+    if (error) {
+      console.log(error);
+    }
+    // If there are no errors, send the data to the browser as a json
+    else {
+      res.json(found);
+    }
+  });
+}); 
+
+//  change for 
  
+// router.get("/update/:option/:clid", function(req, res) {
+// 	switch(req.params.option) {
+// 		case 'no':
+// 			db.craigslistCars.update(
+// 				{clid: req.params.clid},
+// 				{$set:
+// 					{no: true, yes: false, maybe: false}
+// 				}, function(error, saved) {
+// 			          // If there's an error during this query
+// 			          if (error) {
+// 			            // Log the error
+// 			            console.log(error);
+// 			          }
+// 			          // Otherwise,
+// 			          else {
+// 			            // Log the saved data
+// 			            console.log(saved);
+// 			          }
+// 			});
+// 			console.log(req.params.clid)
+// 			console.log('set to no');
+// 			break;
+// 		case 'yes':
+// 			db.craigslistCars.update(
+// 				{clid: req.params.clid},
+// 				{$set:
+// 					{no: false, yes: true, maybe: false}
+// 				}, function(error, saved) {
+// 			          // If there's an error during this query
+// 			          if (error) {
+// 			            // Log the error
+// 			            console.log(error);
+// 			          }
+// 			          // Otherwise,
+// 			          else {
+// 			            // Log the saved data
+// 			            console.log(saved);
+// 			          }
+// 			});
+// 			console.log(req.params.clid)
+// 			console.log('set to yes');
+// 			break;
+// 		case 'maybe':
+// 			db.craigslistCars.update(
+// 				{clid: req.params.clid},
+// 				{$set:
+// 					{no: false, yes: false, maybe: true}
+// 				}, function(error, saved) {
+// 			          // If there's an error during this query
+// 			          if (error) {
+// 			            // Log the error
+// 			            console.log(error);
+// 			          }
+// 			          // Otherwise,
+// 			          else {
+// 			            // Log the saved data
+// 			            console.log(saved);
+// 			          }
+// 			});
+// 			console.log(req.params.clid)
+// 			console.log('set to maybe');
+// 			break;
+// 	}
+// 	res.json({})
+// });
+
+router.get("/category/:option", function(req, res) {
+	switch(req.params.option) {
+		//return nos
+			case 'no':
+				db.choices.find({no: true}, function(error, results) {
+			          // If there's an error during this query
+			          if (error) {
+			            // Log the error
+			            console.log(error);
+			          }
+			          // Otherwise,
+			          else {
+			            // Log the results data
+			            console.log(results);
+									res.json(results);
+			          }
+				});
+				break;
+				//return yes
+			case 'yes':
+				db.choices.find({yes: true}, function(error, results) {
+			          // If there's an error during this query
+			          if (error) {
+			            // Log the error
+			            console.log(error);
+			          }
+			          // Otherwise,
+			          else {
+			            // Log the results data
+			            console.log(results);
+									res.json(results);
+			          }
+				});
+				break;
+			case 'maybe':
+				db.choices.find({maybe: true}, function(error, results) {
+			          // If there's an error during this query
+			          if (error) {
+			            // Log the error
+			            console.log(error);
+			          }
+			          // Otherwise,
+			          else {
+			            // Log the results data
+			            console.log(results);
+									res.json(results);
+			          }
+			});
+				break;
+	}
+		
+});
+
+
 router.get("/update/:option/:clid", function(req, res) {
 	switch(req.params.option) {
 		case 'no':
-			db.craigslistCars.update(
+			db.choices.update(
 				{clid: req.params.clid},
 				{$set:
-					{no: true, yes: false, maybe: false}
+					{no: true, yes: false, maybe: false, clid: req.params.clid}
+				},
+				{
+					upsert: true
 				}, function(error, saved) {
 			          // If there's an error during this query
 			          if (error) {
@@ -116,10 +261,13 @@ router.get("/update/:option/:clid", function(req, res) {
 			console.log('set to no');
 			break;
 		case 'yes':
-			db.craigslistCars.update(
+			db.choices.update(
 				{clid: req.params.clid},
 				{$set:
-					{no: false, yes: true, maybe: false}
+					{no: false, yes: true, maybe: false, clid: req.params.clid}
+				},
+				{
+					upsert: true
 				}, function(error, saved) {
 			          // If there's an error during this query
 			          if (error) {
@@ -136,10 +284,13 @@ router.get("/update/:option/:clid", function(req, res) {
 			console.log('set to yes');
 			break;
 		case 'maybe':
-			db.craigslistCars.update(
+			db.choices.update(
 				{clid: req.params.clid},
 				{$set:
-					{no: false, yes: false, maybe: true}
+					{no: false, yes: false, maybe: true, clid: req.params.clid}
+				},
+				{
+					upsert: true
 				}, function(error, saved) {
 			          // If there's an error during this query
 			          if (error) {
@@ -158,7 +309,6 @@ router.get("/update/:option/:clid", function(req, res) {
 	}
 	res.json({})
 });
-
 
 router.get("/scrape/:make", function(req, res) {
 	
