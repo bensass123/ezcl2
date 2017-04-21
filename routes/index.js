@@ -10,9 +10,11 @@ var mongojs = require("mongojs");
 var path = require('path');
 
 // Database configuration
-// var databaseUrl = "mongodb://heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2/";
-var databaseUrl = 'scraper';
+var databaseUrl = "mongodb://heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2/";
+// var databaseUrl = 'scraper';
 // var collections = ["craigslistCars"];
+
+
 
 // Hook mongojs configuration to the db variable
 // var db = mongojs(databaseUrl,collections); 
