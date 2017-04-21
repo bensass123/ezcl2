@@ -84,6 +84,32 @@
 
 <script type='text/javascript'>
 
+// method to hit route to create choices collection
+
+var initChoices = () => {
+    $.getJSON("/initchoices/", function(result){
+  		//populating the database
+    });
+}
+
+// scraping and adding to mongo db
+
+var scrape = (make) => {
+  $.getJSON("/scrape/" + make, function(result){
+  		//populating the database
+    });
+}
+
+
+// initChoices();
+scrape('honda');
+scrape('toyota');
+scrape('mazda');
+scrape('nissan');
+scrape('subaru');
+
+
+
 // populating arrays for yes, no, maybes
 
 var nos = [];
@@ -123,19 +149,6 @@ updateNos();
 updateMaybes();
 updateYeses();
 
-//scraping and adding to mongo db
-
-var scrape = (make) => {
-  $.getJSON("/scrape/" + make, function(result){
-  		//populating the database
-    });
-}
-
-scrape('honda');
-scrape('toyota');
-scrape('mazda');
-scrape('nissan');
-scrape('subaru');
 
 var categorize = (option, clid) => {
 	$.getJSON("/update/" + option + '/' + clid, function(result) {

@@ -10,14 +10,14 @@ var mongojs = require("mongojs");
 var path = require('path');
 
 // Database configuration
-var databaseUrl = "mongodb://heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2/";
+var databaseUrl = "heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2/";
 // var databaseUrl = 'scraper';
-// var collections = ["craigslistCars"];
+var collections = ["craigslistCars","choices"];
 
 
 
 // Hook mongojs configuration to the db variable
-// var db = mongojs(databaseUrl,collections); 
+
 var db = mongojs(databaseUrl); 
 
 db.on("error", function(error) {
@@ -27,7 +27,7 @@ db.on("error", function(error) {
 //function to get address
 var clSearch = (postedToday, minPrice, maxPrice, make, minyear, maxMiles, onlyAutoTran) => {
 	//will not add auto tran if false
-	var transmission = '';
+	var transmission = ''; 
 	var today = '';
 	if (onlyAutoTran) {transmission = '&auto_transmission=2'}
 	if (postedToday) {today = '&postedToday=1'}
@@ -52,7 +52,27 @@ router.get('/', function(req, res, next) {
 });
 
 
-
+//init choices collection 
+// router.get("/initchoices", function(req, res) {
+// 	db.choices.update(
+// 					{clid: '11111111'},
+// 					{$set:
+// 						{no: true, yes: false, maybe: false, clid: '11111111'}
+// 					},
+// 					{
+// 						upsert: true
+// 					}, 
+// 					function(error, found) {
+// 						// Throw any errors to the console
+// 						if (error) {
+// 							console.log(error);
+// 						}
+// 						else{
+// 							res.json({});
+// 						}
+// 					}					
+//   );
+// });
 
 
 // Retrieve data from the db
@@ -184,6 +204,7 @@ router.get("/all", function(req, res) {
 // });
 
 router.get("/category/:option", function(req, res) {
+	
 	switch(req.params.option) {
 		//return nos
 			case 'no':
@@ -347,7 +368,7 @@ router.get("/scrape/:make", function(req, res) {
 			    var title = $('#titletextonly')[0].children[0]['data'];
 			    var post = $('#postingbody')[0]['children'][2].data;
 			    var price = $('.price')[0].children[0]['data'];
-			    console.log(price);
+			    // console.log(price);
 			    // console.log(post);
 			    try {
 			    	var current = script[2].children[0]['data'];
