@@ -1,9 +1,9 @@
 {
   "name": "ezcl2",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
