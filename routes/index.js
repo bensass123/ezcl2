@@ -343,7 +343,7 @@ router.get("/scrape/:make", function(req, res) {
 	
 	console.log('hi');
 	console.log(req.params.make);
-	var url = clSearch(false, 3000, 5500, req.params.make, 1999, 150000, false);
+	var url = clSearch(false, 3000, 6000, req.params.make, 1999, 150000, false);
   	
 
   	// Scrape data from craigslist search page and get url's of matching cars
