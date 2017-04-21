@@ -10,7 +10,7 @@ var mongojs = require("mongojs");
 var path = require('path');
 
 // Database configuration
-var databaseUrl = "heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2?ssl=true";
+var databaseUrl = "heroku_rh9df1q2:bmp7h13br8nqkeafb9bl3stc8q@ds149278.mlab.com:49278/heroku_rh9df1q2";
 // var databaseUrl = 'scraper';
 var collections = ["craigslistCars","choices"];
 
