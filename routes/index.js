@@ -121,6 +121,11 @@ router.get("/return/:make", function(req, res) {
   });
 }); 
 
+router.get("/test", function(req, res) {
+	res.json({});
+})
+
+
 router.get("/all", function(req, res) {
 	console.log('return all hit');
 	db.craigslistCars.find({}, function(error, found) {
