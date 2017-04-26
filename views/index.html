@@ -283,11 +283,26 @@ var getMake = (make) => {
     updateNos();
     updateMaybes();
     updateYeses();
-	$('#buttons2').empty()
+	$('#buttons2').empty();
+    //add delete button here w data of clid
 	  $.getJSON("/return/" + make, function(result){
 	  	$('#results').empty();
         result.forEach((field, i) => {
         	if (!nos.includes(field.clid)) {
+                var deleteButton = $('<button/>',
+	            {
+	                class: 'btn btn-md btn-danger delButton',
+	                id: 'delButton_' + i,
+	                text: 'X',
+	                'data-index': i,
+                    'data-clid': field.clid,
+	                'data-href': field.href,
+	                click: function (event) {
+	                	$('#buttons2').empty(); 
+	                    var clid = $(this).data('clid');
+                        categorize('no', clid); 
+	                }
+                });
 	        	var fillDiv = $('<button/>',
 	            {
 	                class: 'btn btn-md btn-info carButton',
@@ -305,6 +320,7 @@ var getMake = (make) => {
 	                    setTimeout(function(){$('html, body').animate({scrollTop: '0px'}, 300);}, 200);
 	                }
 	            });
+            $("#buttons2").append(deleteButton);
             $("#buttons2").append(fillDiv);
         	}
         });
