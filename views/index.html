@@ -52,7 +52,7 @@ body{
     <div class='container'>
       <div class='row'>
        <div class='col-sm-6'>
-       <button type="button" class="btn btn-lg btn-primary catButton" onclick="categorize('yes', {{ clid }})">YES</button>
+       <button type="button" class="btn btn-lg btn-success catButton" onclick="categorize('yes', {{ clid }})">YES</button>
        <button type="button" class="btn btn-lg btn-warning catButton" onclick="categorize('maybe', {{ clid }})">MAYBE</button>  
        <button type="button" class="btn btn-lg btn-danger catButton" onclick="categorize('no', {{ clid }})">NO</button>      
         <a target="_blank" href= {{ link }} style='font-size: 20px; color: white; font-weight: bolder;'><h2>{{ title }}</h2><br>
@@ -121,8 +121,8 @@ scrape('toyota');
 scrape('mazda');
 scrape('nissan');
 scrape('subaru');
-
-
+scrape('hyundai');
+scrape('van');
 
 // populating arrays for yes, no, maybes
 
@@ -394,6 +394,8 @@ $( document ).ready(function() {
 	makeButton('nissan');
 	makeButton('mazda');
 	makeButton('subaru');
+    makeButton('hyundai');
+    makeButton('van');
     makeYesButton();
     makeMaybeButton();
     makeNoButton();
