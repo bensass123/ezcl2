@@ -9,7 +9,10 @@
 </head>
 
 <style>
-
+#post {
+    font-weight: bold;
+    color: white;
+}
 .carButton{
     display: block;
     color: black;
@@ -45,7 +48,7 @@ body{
        <button type="button" class="btn btn-lg btn-primary catButton" onclick="categorize('yes', {{ clid }})">YES</button>
        <button type="button" class="btn btn-lg btn-warning catButton" onclick="categorize('maybe', {{ clid }})">MAYBE</button>  
        <button type="button" class="btn btn-lg btn-danger catButton" onclick="categorize('no', {{ clid }})">NO</button>      
-        <a target="_blank" href= {{ link }} style='font-size: 20px; text-align:center;'><h2>{{ title }}</h2><br>
+        <a target="_blank" href= {{ link }} style='font-size: 20px; color: white; font-weight: bolder;'><h2>{{ title }}</h2><br>
         <h3 style='text-align: center'>{{ price }}</h3></a>
         <p id='post'>{{ post }}</p>
         {{#each pics}}
