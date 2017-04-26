@@ -297,9 +297,13 @@ var getMake = (make) => {
 	                'data-index': i,
                     'data-clid': field.clid,
 	                'data-href': field.href,
+                    'data-filldelete': '#fillButton_' + i,
 	                click: function (event) {
-	                	$('#buttons2').empty(); 
+	                	// $('#buttons2').empty(); 
 	                    var clid = $(this).data('clid');
+                        var fillD = $(this).data('filldelete');
+                        $(this).remove();
+                        $(fillD).remove();
                         categorize('no', clid); 
 	                }
                 });

@@ -25,15 +25,18 @@ db.on("error", function(error) {
 });
 
 //function to get address
-var clSearch = (postedToday, minPrice, maxPrice, make, minyear, maxMiles, onlyAutoTran) => {
+var clSearch = (postedToday, minPrice, maxPrice, make, maxMiles, onlyAutoTran) => {
 	//will not add auto tran if false
 	var transmission = ''; 
 	var today = '';
 	if (onlyAutoTran) {transmission = '&auto_transmission=2'}
 	if (postedToday) {today = '&postedToday=1'}
 
+	console.log('https://charlotte.craigslist.org/search/cta?srchType=T' + today +'&bundleDuplicates=1&search_distance=60&postal=28277&min_price='+minPrice+'&max_price=' 
+ + maxPrice + '&auto_make_model='+ make +'&max_auto_miles=' + maxMiles + '&auto_title_status=1' + transmission);
+
 	return 'https://charlotte.craigslist.org/search/cta?srchType=T' + today +'&bundleDuplicates=1&search_distance=60&postal=28277&min_price='+minPrice+'&max_price=' 
- + maxPrice + '&auto_make_model='+ make +'&min_auto_year='+minyear+'&max_auto_miles=' + maxMiles + '&auto_title_status=1' + transmission;
+ + maxPrice + '&auto_make_model='+ make +'&max_auto_miles=' + maxMiles + '&auto_title_status=1' + transmission;
 }
 
 //function to complete href links
@@ -343,7 +346,7 @@ router.get("/scrape/:make", function(req, res) {
 	
 	console.log('hi');
 	console.log(req.params.make);
-	var url = clSearch(false, 3000, 6000, req.params.make, 1999, 150000, false);
+	var url = clSearch(false, 3000, 6000, req.params.make,  170000, false);
   	
 
   	// Scrape data from craigslist search page and get url's of matching cars
